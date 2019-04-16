@@ -1,4 +1,22 @@
 type User {
   id: ID! @unique
-  name: String!
+  firstName: String
+  lastName: String
+  email: String! @unique
+  password: String!
+  resetPasswordToken: String @unique
+  stripeCustomerId: String @unique
+  periodStart: DateTime
+  periodEnd: DateTime
+  team: Team
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Team {
+  id: ID! @unique
+  name: String
+  users: [User]
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }

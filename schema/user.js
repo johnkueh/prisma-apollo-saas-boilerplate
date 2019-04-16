@@ -14,7 +14,7 @@ export default gql`
     resetPassword(password: String!, token: String!): Result
     updateUser(firstName: String, lastName: String, email: String, password: String): User!
       @requireAuth
-    deleteUser(id: ID!): Int!
+    deleteUser: User! @requireAuth
     addCreditCard(token: String): Result @requireAuth
     subscribePlan(planId: String!): Result @requireAuth
   }

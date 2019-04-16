@@ -3,7 +3,11 @@ module.exports = {
   // Please don't change this file manually but run `prisma generate` to update it.
   // For more information, please read the docs: https://www.prisma.io/docs/prisma-client/
 
-/* GraphQL */ `type AggregateUser {
+/* GraphQL */ `type AggregateTeam {
+  count: Int!
+}
+
+type AggregateUser {
   count: Int!
 }
 
@@ -11,9 +15,17 @@ type BatchPayload {
   count: Long!
 }
 
+scalar DateTime
+
 scalar Long
 
 type Mutation {
+  createTeam(data: TeamCreateInput!): Team!
+  updateTeam(data: TeamUpdateInput!, where: TeamWhereUniqueInput!): Team
+  updateManyTeams(data: TeamUpdateManyMutationInput!, where: TeamWhereInput): BatchPayload!
+  upsertTeam(where: TeamWhereUniqueInput!, create: TeamCreateInput!, update: TeamUpdateInput!): Team!
+  deleteTeam(where: TeamWhereUniqueInput!): Team
+  deleteManyTeams(where: TeamWhereInput): BatchPayload!
   createUser(data: UserCreateInput!): User!
   updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
   updateManyUsers(data: UserUpdateManyMutationInput!, where: UserWhereInput): BatchPayload!
@@ -40,6 +52,9 @@ type PageInfo {
 }
 
 type Query {
+  team(where: TeamWhereUniqueInput!): Team
+  teams(where: TeamWhereInput, orderBy: TeamOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Team]!
+  teamsConnection(where: TeamWhereInput, orderBy: TeamOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): TeamConnection!
   user(where: UserWhereUniqueInput!): User
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User]!
   usersConnection(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): UserConnection!
@@ -47,30 +62,44 @@ type Query {
 }
 
 type Subscription {
+  team(where: TeamSubscriptionWhereInput): TeamSubscriptionPayload
   user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
 }
 
-type User {
+type Team {
   id: ID!
-  name: String!
+  name: String
+  users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User!]
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
-type UserConnection {
+type TeamConnection {
   pageInfo: PageInfo!
-  edges: [UserEdge]!
-  aggregate: AggregateUser!
+  edges: [TeamEdge]!
+  aggregate: AggregateTeam!
 }
 
-input UserCreateInput {
-  name: String!
+input TeamCreateInput {
+  name: String
+  users: UserCreateManyWithoutTeamInput
 }
 
-type UserEdge {
-  node: User!
+input TeamCreateOneWithoutUsersInput {
+  create: TeamCreateWithoutUsersInput
+  connect: TeamWhereUniqueInput
+}
+
+input TeamCreateWithoutUsersInput {
+  name: String
+}
+
+type TeamEdge {
+  node: Team!
   cursor: String!
 }
 
-enum UserOrderByInput {
+enum TeamOrderByInput {
   id_ASC
   id_DESC
   name_ASC
@@ -81,38 +110,59 @@ enum UserOrderByInput {
   updatedAt_DESC
 }
 
-type UserPreviousValues {
+type TeamPreviousValues {
   id: ID!
-  name: String!
+  name: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
-type UserSubscriptionPayload {
+type TeamSubscriptionPayload {
   mutation: MutationType!
-  node: User
+  node: Team
   updatedFields: [String!]
-  previousValues: UserPreviousValues
+  previousValues: TeamPreviousValues
 }
 
-input UserSubscriptionWhereInput {
+input TeamSubscriptionWhereInput {
   mutation_in: [MutationType!]
   updatedFields_contains: String
   updatedFields_contains_every: [String!]
   updatedFields_contains_some: [String!]
-  node: UserWhereInput
-  AND: [UserSubscriptionWhereInput!]
-  OR: [UserSubscriptionWhereInput!]
-  NOT: [UserSubscriptionWhereInput!]
+  node: TeamWhereInput
+  AND: [TeamSubscriptionWhereInput!]
+  OR: [TeamSubscriptionWhereInput!]
+  NOT: [TeamSubscriptionWhereInput!]
 }
 
-input UserUpdateInput {
+input TeamUpdateInput {
+  name: String
+  users: UserUpdateManyWithoutTeamInput
+}
+
+input TeamUpdateManyMutationInput {
   name: String
 }
 
-input UserUpdateManyMutationInput {
+input TeamUpdateOneWithoutUsersInput {
+  create: TeamCreateWithoutUsersInput
+  update: TeamUpdateWithoutUsersDataInput
+  upsert: TeamUpsertWithoutUsersInput
+  delete: Boolean
+  disconnect: Boolean
+  connect: TeamWhereUniqueInput
+}
+
+input TeamUpdateWithoutUsersDataInput {
   name: String
 }
 
-input UserWhereInput {
+input TeamUpsertWithoutUsersInput {
+  update: TeamUpdateWithoutUsersDataInput!
+  create: TeamCreateWithoutUsersInput!
+}
+
+input TeamWhereInput {
   id: ID
   id_not: ID
   id_in: [ID!]
@@ -141,6 +191,486 @@ input UserWhereInput {
   name_not_starts_with: String
   name_ends_with: String
   name_not_ends_with: String
+  users_every: UserWhereInput
+  users_some: UserWhereInput
+  users_none: UserWhereInput
+  createdAt: DateTime
+  createdAt_not: DateTime
+  createdAt_in: [DateTime!]
+  createdAt_not_in: [DateTime!]
+  createdAt_lt: DateTime
+  createdAt_lte: DateTime
+  createdAt_gt: DateTime
+  createdAt_gte: DateTime
+  updatedAt: DateTime
+  updatedAt_not: DateTime
+  updatedAt_in: [DateTime!]
+  updatedAt_not_in: [DateTime!]
+  updatedAt_lt: DateTime
+  updatedAt_lte: DateTime
+  updatedAt_gt: DateTime
+  updatedAt_gte: DateTime
+  AND: [TeamWhereInput!]
+  OR: [TeamWhereInput!]
+  NOT: [TeamWhereInput!]
+}
+
+input TeamWhereUniqueInput {
+  id: ID
+}
+
+type User {
+  id: ID!
+  firstName: String
+  lastName: String
+  email: String!
+  password: String!
+  resetPasswordToken: String
+  stripeCustomerId: String
+  periodStart: DateTime
+  periodEnd: DateTime
+  team: Team
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type UserConnection {
+  pageInfo: PageInfo!
+  edges: [UserEdge]!
+  aggregate: AggregateUser!
+}
+
+input UserCreateInput {
+  firstName: String
+  lastName: String
+  email: String!
+  password: String!
+  resetPasswordToken: String
+  stripeCustomerId: String
+  periodStart: DateTime
+  periodEnd: DateTime
+  team: TeamCreateOneWithoutUsersInput
+}
+
+input UserCreateManyWithoutTeamInput {
+  create: [UserCreateWithoutTeamInput!]
+  connect: [UserWhereUniqueInput!]
+}
+
+input UserCreateWithoutTeamInput {
+  firstName: String
+  lastName: String
+  email: String!
+  password: String!
+  resetPasswordToken: String
+  stripeCustomerId: String
+  periodStart: DateTime
+  periodEnd: DateTime
+}
+
+type UserEdge {
+  node: User!
+  cursor: String!
+}
+
+enum UserOrderByInput {
+  id_ASC
+  id_DESC
+  firstName_ASC
+  firstName_DESC
+  lastName_ASC
+  lastName_DESC
+  email_ASC
+  email_DESC
+  password_ASC
+  password_DESC
+  resetPasswordToken_ASC
+  resetPasswordToken_DESC
+  stripeCustomerId_ASC
+  stripeCustomerId_DESC
+  periodStart_ASC
+  periodStart_DESC
+  periodEnd_ASC
+  periodEnd_DESC
+  createdAt_ASC
+  createdAt_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+}
+
+type UserPreviousValues {
+  id: ID!
+  firstName: String
+  lastName: String
+  email: String!
+  password: String!
+  resetPasswordToken: String
+  stripeCustomerId: String
+  periodStart: DateTime
+  periodEnd: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+input UserScalarWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  firstName: String
+  firstName_not: String
+  firstName_in: [String!]
+  firstName_not_in: [String!]
+  firstName_lt: String
+  firstName_lte: String
+  firstName_gt: String
+  firstName_gte: String
+  firstName_contains: String
+  firstName_not_contains: String
+  firstName_starts_with: String
+  firstName_not_starts_with: String
+  firstName_ends_with: String
+  firstName_not_ends_with: String
+  lastName: String
+  lastName_not: String
+  lastName_in: [String!]
+  lastName_not_in: [String!]
+  lastName_lt: String
+  lastName_lte: String
+  lastName_gt: String
+  lastName_gte: String
+  lastName_contains: String
+  lastName_not_contains: String
+  lastName_starts_with: String
+  lastName_not_starts_with: String
+  lastName_ends_with: String
+  lastName_not_ends_with: String
+  email: String
+  email_not: String
+  email_in: [String!]
+  email_not_in: [String!]
+  email_lt: String
+  email_lte: String
+  email_gt: String
+  email_gte: String
+  email_contains: String
+  email_not_contains: String
+  email_starts_with: String
+  email_not_starts_with: String
+  email_ends_with: String
+  email_not_ends_with: String
+  password: String
+  password_not: String
+  password_in: [String!]
+  password_not_in: [String!]
+  password_lt: String
+  password_lte: String
+  password_gt: String
+  password_gte: String
+  password_contains: String
+  password_not_contains: String
+  password_starts_with: String
+  password_not_starts_with: String
+  password_ends_with: String
+  password_not_ends_with: String
+  resetPasswordToken: String
+  resetPasswordToken_not: String
+  resetPasswordToken_in: [String!]
+  resetPasswordToken_not_in: [String!]
+  resetPasswordToken_lt: String
+  resetPasswordToken_lte: String
+  resetPasswordToken_gt: String
+  resetPasswordToken_gte: String
+  resetPasswordToken_contains: String
+  resetPasswordToken_not_contains: String
+  resetPasswordToken_starts_with: String
+  resetPasswordToken_not_starts_with: String
+  resetPasswordToken_ends_with: String
+  resetPasswordToken_not_ends_with: String
+  stripeCustomerId: String
+  stripeCustomerId_not: String
+  stripeCustomerId_in: [String!]
+  stripeCustomerId_not_in: [String!]
+  stripeCustomerId_lt: String
+  stripeCustomerId_lte: String
+  stripeCustomerId_gt: String
+  stripeCustomerId_gte: String
+  stripeCustomerId_contains: String
+  stripeCustomerId_not_contains: String
+  stripeCustomerId_starts_with: String
+  stripeCustomerId_not_starts_with: String
+  stripeCustomerId_ends_with: String
+  stripeCustomerId_not_ends_with: String
+  periodStart: DateTime
+  periodStart_not: DateTime
+  periodStart_in: [DateTime!]
+  periodStart_not_in: [DateTime!]
+  periodStart_lt: DateTime
+  periodStart_lte: DateTime
+  periodStart_gt: DateTime
+  periodStart_gte: DateTime
+  periodEnd: DateTime
+  periodEnd_not: DateTime
+  periodEnd_in: [DateTime!]
+  periodEnd_not_in: [DateTime!]
+  periodEnd_lt: DateTime
+  periodEnd_lte: DateTime
+  periodEnd_gt: DateTime
+  periodEnd_gte: DateTime
+  createdAt: DateTime
+  createdAt_not: DateTime
+  createdAt_in: [DateTime!]
+  createdAt_not_in: [DateTime!]
+  createdAt_lt: DateTime
+  createdAt_lte: DateTime
+  createdAt_gt: DateTime
+  createdAt_gte: DateTime
+  updatedAt: DateTime
+  updatedAt_not: DateTime
+  updatedAt_in: [DateTime!]
+  updatedAt_not_in: [DateTime!]
+  updatedAt_lt: DateTime
+  updatedAt_lte: DateTime
+  updatedAt_gt: DateTime
+  updatedAt_gte: DateTime
+  AND: [UserScalarWhereInput!]
+  OR: [UserScalarWhereInput!]
+  NOT: [UserScalarWhereInput!]
+}
+
+type UserSubscriptionPayload {
+  mutation: MutationType!
+  node: User
+  updatedFields: [String!]
+  previousValues: UserPreviousValues
+}
+
+input UserSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: UserWhereInput
+  AND: [UserSubscriptionWhereInput!]
+  OR: [UserSubscriptionWhereInput!]
+  NOT: [UserSubscriptionWhereInput!]
+}
+
+input UserUpdateInput {
+  firstName: String
+  lastName: String
+  email: String
+  password: String
+  resetPasswordToken: String
+  stripeCustomerId: String
+  periodStart: DateTime
+  periodEnd: DateTime
+  team: TeamUpdateOneWithoutUsersInput
+}
+
+input UserUpdateManyDataInput {
+  firstName: String
+  lastName: String
+  email: String
+  password: String
+  resetPasswordToken: String
+  stripeCustomerId: String
+  periodStart: DateTime
+  periodEnd: DateTime
+}
+
+input UserUpdateManyMutationInput {
+  firstName: String
+  lastName: String
+  email: String
+  password: String
+  resetPasswordToken: String
+  stripeCustomerId: String
+  periodStart: DateTime
+  periodEnd: DateTime
+}
+
+input UserUpdateManyWithoutTeamInput {
+  create: [UserCreateWithoutTeamInput!]
+  delete: [UserWhereUniqueInput!]
+  connect: [UserWhereUniqueInput!]
+  set: [UserWhereUniqueInput!]
+  disconnect: [UserWhereUniqueInput!]
+  update: [UserUpdateWithWhereUniqueWithoutTeamInput!]
+  upsert: [UserUpsertWithWhereUniqueWithoutTeamInput!]
+  deleteMany: [UserScalarWhereInput!]
+  updateMany: [UserUpdateManyWithWhereNestedInput!]
+}
+
+input UserUpdateManyWithWhereNestedInput {
+  where: UserScalarWhereInput!
+  data: UserUpdateManyDataInput!
+}
+
+input UserUpdateWithoutTeamDataInput {
+  firstName: String
+  lastName: String
+  email: String
+  password: String
+  resetPasswordToken: String
+  stripeCustomerId: String
+  periodStart: DateTime
+  periodEnd: DateTime
+}
+
+input UserUpdateWithWhereUniqueWithoutTeamInput {
+  where: UserWhereUniqueInput!
+  data: UserUpdateWithoutTeamDataInput!
+}
+
+input UserUpsertWithWhereUniqueWithoutTeamInput {
+  where: UserWhereUniqueInput!
+  update: UserUpdateWithoutTeamDataInput!
+  create: UserCreateWithoutTeamInput!
+}
+
+input UserWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  firstName: String
+  firstName_not: String
+  firstName_in: [String!]
+  firstName_not_in: [String!]
+  firstName_lt: String
+  firstName_lte: String
+  firstName_gt: String
+  firstName_gte: String
+  firstName_contains: String
+  firstName_not_contains: String
+  firstName_starts_with: String
+  firstName_not_starts_with: String
+  firstName_ends_with: String
+  firstName_not_ends_with: String
+  lastName: String
+  lastName_not: String
+  lastName_in: [String!]
+  lastName_not_in: [String!]
+  lastName_lt: String
+  lastName_lte: String
+  lastName_gt: String
+  lastName_gte: String
+  lastName_contains: String
+  lastName_not_contains: String
+  lastName_starts_with: String
+  lastName_not_starts_with: String
+  lastName_ends_with: String
+  lastName_not_ends_with: String
+  email: String
+  email_not: String
+  email_in: [String!]
+  email_not_in: [String!]
+  email_lt: String
+  email_lte: String
+  email_gt: String
+  email_gte: String
+  email_contains: String
+  email_not_contains: String
+  email_starts_with: String
+  email_not_starts_with: String
+  email_ends_with: String
+  email_not_ends_with: String
+  password: String
+  password_not: String
+  password_in: [String!]
+  password_not_in: [String!]
+  password_lt: String
+  password_lte: String
+  password_gt: String
+  password_gte: String
+  password_contains: String
+  password_not_contains: String
+  password_starts_with: String
+  password_not_starts_with: String
+  password_ends_with: String
+  password_not_ends_with: String
+  resetPasswordToken: String
+  resetPasswordToken_not: String
+  resetPasswordToken_in: [String!]
+  resetPasswordToken_not_in: [String!]
+  resetPasswordToken_lt: String
+  resetPasswordToken_lte: String
+  resetPasswordToken_gt: String
+  resetPasswordToken_gte: String
+  resetPasswordToken_contains: String
+  resetPasswordToken_not_contains: String
+  resetPasswordToken_starts_with: String
+  resetPasswordToken_not_starts_with: String
+  resetPasswordToken_ends_with: String
+  resetPasswordToken_not_ends_with: String
+  stripeCustomerId: String
+  stripeCustomerId_not: String
+  stripeCustomerId_in: [String!]
+  stripeCustomerId_not_in: [String!]
+  stripeCustomerId_lt: String
+  stripeCustomerId_lte: String
+  stripeCustomerId_gt: String
+  stripeCustomerId_gte: String
+  stripeCustomerId_contains: String
+  stripeCustomerId_not_contains: String
+  stripeCustomerId_starts_with: String
+  stripeCustomerId_not_starts_with: String
+  stripeCustomerId_ends_with: String
+  stripeCustomerId_not_ends_with: String
+  periodStart: DateTime
+  periodStart_not: DateTime
+  periodStart_in: [DateTime!]
+  periodStart_not_in: [DateTime!]
+  periodStart_lt: DateTime
+  periodStart_lte: DateTime
+  periodStart_gt: DateTime
+  periodStart_gte: DateTime
+  periodEnd: DateTime
+  periodEnd_not: DateTime
+  periodEnd_in: [DateTime!]
+  periodEnd_not_in: [DateTime!]
+  periodEnd_lt: DateTime
+  periodEnd_lte: DateTime
+  periodEnd_gt: DateTime
+  periodEnd_gte: DateTime
+  team: TeamWhereInput
+  createdAt: DateTime
+  createdAt_not: DateTime
+  createdAt_in: [DateTime!]
+  createdAt_not_in: [DateTime!]
+  createdAt_lt: DateTime
+  createdAt_lte: DateTime
+  createdAt_gt: DateTime
+  createdAt_gte: DateTime
+  updatedAt: DateTime
+  updatedAt_not: DateTime
+  updatedAt_in: [DateTime!]
+  updatedAt_not_in: [DateTime!]
+  updatedAt_lt: DateTime
+  updatedAt_lte: DateTime
+  updatedAt_gt: DateTime
+  updatedAt_gte: DateTime
   AND: [UserWhereInput!]
   OR: [UserWhereInput!]
   NOT: [UserWhereInput!]
@@ -148,6 +678,9 @@ input UserWhereInput {
 
 input UserWhereUniqueInput {
   id: ID
+  email: String
+  resetPasswordToken: String
+  stripeCustomerId: String
 }
 `
       }

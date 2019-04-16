@@ -1,26 +1,36 @@
-import { analytics } from '../services/segment';
+import { UserInputError } from 'apollo-server';
 
 export default {
   Mutation: {
-    async createTeam(parent, { name }, { user, models }, info) {
-      const team = await models.team.create({
-        name
-      });
-      await user.update({ teamId: team.id });
-
-      return team;
+    async createTeam(parent, { name }, { user, prisma }, info) {
+      const team = await prisma.user({ id: user.id }).team();
+      if (team) {
+        throw new UserInputError('You have already created a team.');
+      } else {
+        return prisma
+          .updateUser({
+            where: { id: user.id },
+            data: {
+              team: {
+                create: {
+                  name
+                }
+              }
+            }
+          })
+          .team();
+      }
     },
-    async updateTeam(parent, { name }, { user, models }, info) {
-      const dbUser = await models.user.findOne({
-        where: { id: user.id },
-        include: [{ model: models.team }]
-      });
-
-      if (dbUser.team) {
-        return dbUser.team.update({ name });
+    async updateTeam(parent, { name }, { user, prisma }, info) {
+      const team = await prisma.user({ id: user.id }).team();
+      if (team) {
+        return prisma.updateTeam({
+          where: { id: team.id },
+          data: { name }
+        });
       }
 
-      throw new Error('Unable to update team - please create a team first.');
+      throw new UserInputError('You have not created team yet.');
     }
   }
 };

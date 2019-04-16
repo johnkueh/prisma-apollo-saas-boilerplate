@@ -4,12 +4,12 @@ import { ApolloServer, gql } from 'apollo-server-express';
 import jwt from 'express-jwt';
 import bodyParser from 'body-parser';
 import moment from 'moment';
+import { prisma } from './generated/prisma-client';
 import schema from './schema';
 import resolvers from './resolvers';
 import RequireAuthDirective from './directives/requireAuthDirective';
 import ComputedDirective from './directives/computedDirective';
 import AnalyticsDirective from './directives/analyticsDirective';
-// import models, { sequelize } from './db/models';
 import { handleWebhook } from './services/stripe';
 
 const app = express();
@@ -45,10 +45,9 @@ const server = new ApolloServer({
     };
   },
   context: async ({ req }) => {
-    // const dbUser = req.user ? await models.user.findOne({ where: { id: req.user.id } }) : null;
-    const dbUser = null;
+    const dbUser = req.user ? await prisma.user({ id: req.user.id }) : null;
     return {
-      // models,
+      prisma,
       user: dbUser
     };
   }
@@ -62,8 +61,7 @@ app.post(process.env.STRIPE_WEBHOOKS_PATH, (req, res, next) => {
     req,
     res,
     handleSubscriptionUpdated: async ({ customerId, periodStart, periodEnd }) => {
-      // const user = await models.user.findOne({ where: { stripeCustomerId: customerId } });
-      const user = null;
+      const user = await prisma.user({ stripeCustomerId: customerId });
       user.update({
         periodStart: moment.unix(periodStart).toDate(),
         periodEnd: moment.unix(periodEnd).toDate()
