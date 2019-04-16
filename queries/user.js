@@ -80,8 +80,10 @@ mutation ForgotPassword($email: String!) {
 `;
 
 export const DELETE_USER = `
-mutation DeleteUser($id: ID!) {
-  deleteUser(id: $id)
+mutation DeleteUser {
+  deleteUser(id: $id) {
+    id
+  }
 }
 `;
 

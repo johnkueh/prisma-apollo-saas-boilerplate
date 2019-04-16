@@ -12,9 +12,10 @@ Object {
 
 exports[`User schema mutation { deleteUser } should return expected value 1`] = `
 Object {
-  "data": Object {
-    "deleteUser": 1,
-  },
+  "errors": Array [
+    [GraphQLError: Unknown argument "id" on field "deleteUser" of type "Mutation".],
+    [GraphQLError: Variable "$id" is not defined by operation "DeleteUser".],
+  ],
 }
 `;
 
