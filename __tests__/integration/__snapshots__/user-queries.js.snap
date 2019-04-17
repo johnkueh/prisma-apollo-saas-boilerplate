@@ -51,3 +51,26 @@ Object {
   },
 }
 `;
+
+exports[`able to signup successfully 1`] = `
+Object {
+  "data": Object {
+    "signup": Object {
+      "jwt": "JWT_TOKEN_STRING",
+      "user": Object {
+        "email": "test@user.com",
+        "firstName": "Test",
+        "id": "1",
+        "lastName": "User",
+      },
+    },
+  },
+  "errors": undefined,
+  "extensions": undefined,
+  "http": Object {
+    "headers": Headers {
+      Symbol(map): Object {},
+    },
+  },
+}
+`;

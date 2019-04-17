@@ -3,7 +3,6 @@ import { ApolloServer } from 'apollo-server-express';
 import typeDefs from '../../schema';
 import resolvers from '../../resolvers';
 import schemaDirectives from '../../directives';
-import userFactory from '../../factories/user';
 import {
   ME,
   PAYMENT_HISTORY,
@@ -15,7 +14,7 @@ import {
 
 let client;
 
-beforeEach(async () => {
+beforeAll(async () => {
   const server = await new ApolloServer({
     typeDefs,
     resolvers,

@@ -16,30 +16,30 @@ import {
   SUBSCRIBE_PLAN
 } from '../../queries/user';
 
-let client;
+let server;
 
 beforeEach(async () => {
-  const server = await new ApolloServer({
+  server = await new ApolloServer({
     typeDefs,
     resolvers,
-    schemaDirectives,
-    context: () => ({
-      prisma: {
-        user: () =>
-          userFactory({
-            id: 1,
-            email: 'test@user.com',
-            password: 'testpassword'
-          })
-      },
-      user: { id: 1, email: 'test@user.com' }
-    })
+    schemaDirectives
   });
-
-  client = createTestClient(server);
 });
 
 it('able to get user profile', async () => {
+  server.context = () => ({
+    prisma: {
+      user: () =>
+        userFactory({
+          id: 1,
+          email: 'test@user.com',
+          password: 'testpassword'
+        })
+    },
+    user: { id: 1, email: 'test@user.com' }
+  });
+
+  const client = createTestClient(server);
   const res = await client.query({
     query: ME
   });
@@ -48,6 +48,17 @@ it('able to get user profile', async () => {
 });
 
 it('able to login successfully', async () => {
+  server.context = () => ({
+    prisma: {
+      user: () =>
+        userFactory({
+          id: 1,
+          email: 'test@user.com',
+          password: 'testpassword'
+        })
+    }
+  });
+  const client = createTestClient(server);
   const res = await client.query({
     query: LOGIN,
     variables: {
@@ -59,7 +70,44 @@ it('able to login successfully', async () => {
   expect(res).toMatchSnapshot();
 });
 
+it('able to signup successfully', async () => {
+  server.context = () => ({
+    prisma: {
+      user: () => null,
+      createUser: () =>
+        userFactory({
+          id: 1,
+          email: 'test@user.com',
+          password: 'testpassword'
+        })
+    }
+  });
+  const client = createTestClient(server);
+  const res = await client.query({
+    query: SIGNUP,
+    variables: {
+      firstName: 'Test',
+      lastName: 'User',
+      email: 'new.user@test.com',
+      password: 'testpassword'
+    }
+  });
+
+  expect(res).toMatchSnapshot();
+});
+
 it('returns correct error message when email is taken during signup', async () => {
+  server.context = () => ({
+    prisma: {
+      user: () =>
+        userFactory({
+          id: 1,
+          email: 'test@user.com',
+          password: 'testpassword'
+        })
+    }
+  });
+  const client = createTestClient(server);
   const res = await client.query({
     query: SIGNUP,
     variables: {
