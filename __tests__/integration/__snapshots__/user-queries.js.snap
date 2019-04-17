@@ -74,3 +74,43 @@ Object {
   },
 }
 `;
+
+exports[`able to update user password successfully 1`] = `
+Object {
+  "data": Object {
+    "updateUser": Object {
+      "email": "test@user.com",
+      "firstName": "Test",
+      "id": "1",
+      "lastName": "User",
+    },
+  },
+  "errors": undefined,
+  "extensions": undefined,
+  "http": Object {
+    "headers": Headers {
+      Symbol(map): Object {},
+    },
+  },
+}
+`;
+
+exports[`able to update user profile successfully 1`] = `
+Object {
+  "data": Object {
+    "updateUser": Object {
+      "email": "updated+user@test.com",
+      "firstName": "Test",
+      "id": "1",
+      "lastName": "User",
+    },
+  },
+  "errors": undefined,
+  "extensions": undefined,
+  "http": Object {
+    "headers": Headers {
+      Symbol(map): Object {},
+    },
+  },
+}
+`;

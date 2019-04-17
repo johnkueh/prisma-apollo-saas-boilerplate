@@ -63,7 +63,7 @@ mutation Login($email: String!, $password: String!) {
 `;
 
 export const UPDATE_USER = `
-mutation UpdateUser($firstName: String!, $lastName: String!, $email: String!, $password: String!) {
+mutation UpdateUser($firstName: String, $lastName: String, $email: String, $password: String) {
   updateUser(firstName: $firstName, lastName: $lastName, email: $email, password: $password) {
     id
     firstName

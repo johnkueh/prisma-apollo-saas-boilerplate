@@ -120,3 +120,50 @@ it('returns correct error message when email is taken during signup', async () =
 
   expect(res.errors[0].message).toBe('Email is already taken');
 });
+
+it('able to update user profile successfully', async () => {
+  server.context = () => ({
+    prisma: {
+      user: () => userFactory({ id: 1 }),
+      updateUser: ({ data: { email } }) =>
+        userFactory({
+          id: 1,
+          email
+        })
+    },
+    user: { id: 1, email: 'test@user.com' }
+  });
+  const client = createTestClient(server);
+  const res = await client.query({
+    query: UPDATE_USER,
+    variables: {
+      email: 'updated+user@test.com'
+    }
+  });
+
+  expect(res).toMatchSnapshot();
+});
+
+it('able to update user password successfully', async () => {
+  server.context = () => ({
+    prisma: {
+      user: () => userFactory({ id: 1 }),
+      updateUser: ({ data: { email, password } }) =>
+        userFactory({
+          id: 1,
+          email,
+          password
+        })
+    },
+    user: { id: 1, email: 'test@user.com' }
+  });
+  const client = createTestClient(server);
+  const res = await client.query({
+    query: UPDATE_USER,
+    variables: {
+      password: 'newpassword'
+    }
+  });
+
+  expect(res).toMatchSnapshot();
+});

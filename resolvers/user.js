@@ -110,7 +110,7 @@ export default {
     },
     async updateUser(parent, { firstName, lastName, email, password }, { user, prisma }, info) {
       if (password) {
-        user = await prisma.updateUser({
+        return prisma.updateUser({
           where: { id: user.id },
           data: {
             firstName,
@@ -119,17 +119,16 @@ export default {
             password: await hashedPassword(password)
           }
         });
-      } else {
-        await prisma.updateUser({
-          where: { id: user.id },
-          data: {
-            firstName,
-            lastName,
-            email
-          }
-        });
       }
-      return prisma.user({ id: user.id });
+
+      return prisma.updateUser({
+        where: { id: user.id },
+        data: {
+          firstName,
+          lastName,
+          email
+        }
+      });
     },
     async deleteUser(
       parent,
