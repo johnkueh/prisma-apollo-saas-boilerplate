@@ -83,7 +83,7 @@ mutation ForgotPassword($email: String!) {
 
 export const DELETE_USER = `
 mutation DeleteUser {
-  deleteUser(id: $id) {
+  deleteUser {
     id
   }
 }

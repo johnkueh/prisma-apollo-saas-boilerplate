@@ -1,15 +1,15 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`fetches user Me 1`] = `
+exports[`able to get user profile 1`] = `
 Object {
   "data": Object {
     "me": Object {
       "createdAt": "1988-03-01T13:00:00.000Z",
-      "email": "john@beaconmaker.com",
-      "firstName": "John",
-      "fullName": "John Kueh",
+      "email": "test@user.com",
+      "firstName": "Test",
+      "fullName": "Test User",
       "id": "1",
-      "lastName": "Kueh",
+      "lastName": "User",
       "periodEnd": "1988-11-10T13:00:00.000Z",
       "periodStart": "1988-11-09T13:00:00.000Z",
       "team": Object {
@@ -17,6 +17,29 @@ Object {
         "name": "A team name",
       },
       "updatedAt": "1988-03-02T13:00:00.000Z",
+    },
+  },
+  "errors": undefined,
+  "extensions": undefined,
+  "http": Object {
+    "headers": Headers {
+      Symbol(map): Object {},
+    },
+  },
+}
+`;
+
+exports[`able to login successfully 1`] = `
+Object {
+  "data": Object {
+    "login": Object {
+      "jwt": "JWT_TOKEN_STRING",
+      "user": Object {
+        "email": "test@user.com",
+        "firstName": "Test",
+        "id": "1",
+        "lastName": "User",
+      },
     },
   },
   "errors": undefined,
