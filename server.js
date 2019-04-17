@@ -5,11 +5,9 @@ import jwt from 'express-jwt';
 import bodyParser from 'body-parser';
 import moment from 'moment';
 import { prisma } from './generated/prisma-client';
-import schema from './schema';
+import typeDefs from './schema';
 import resolvers from './resolvers';
-import RequireAuthDirective from './directives/requireAuthDirective';
-import ComputedDirective from './directives/computedDirective';
-import AnalyticsDirective from './directives/analyticsDirective';
+import schemaDirectives from './directives';
 import { handleWebhook } from './services/stripe';
 
 const app = express();
@@ -24,31 +22,20 @@ app.use(
 );
 
 const server = new ApolloServer({
-  typeDefs: schema,
+  typeDefs,
   resolvers,
-  schemaDirectives: {
-    requireAuth: RequireAuthDirective,
-    computed: ComputedDirective,
-    analytics: AnalyticsDirective,
-    analytics_group: AnalyticsDirective
-  },
-  formatError: error => {
-    // remove the internal sequelize error message
-    // leave only the important validation error
-    const message = error.message
-      .replace('SequelizeValidationError: ', '')
-      .replace('Validation error: ', '');
+  schemaDirectives,
+  context: async ({ req }) => {
+    let user = null;
+    if (req) {
+      if (req.user) {
+        user = await prisma.user({ id: req.user.id });
+      }
+    }
 
     return {
-      ...error,
-      message
-    };
-  },
-  context: async ({ req }) => {
-    const dbUser = req.user ? await prisma.user({ id: req.user.id }) : null;
-    return {
       prisma,
-      user: dbUser
+      user
     };
   }
 });
