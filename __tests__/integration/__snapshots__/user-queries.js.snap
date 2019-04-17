@@ -5,7 +5,7 @@ Object {
   "data": Object {
     "me": Object {
       "createdAt": "1988-03-01T13:00:00.000Z",
-      "email": "test@user.com",
+      "email": "test+user@email.com",
       "firstName": "Test",
       "fullName": "Test User",
       "id": "1",
@@ -35,7 +35,7 @@ Object {
     "login": Object {
       "jwt": "JWT_TOKEN_STRING",
       "user": Object {
-        "email": "test@user.com",
+        "email": "test+user@email.com",
         "firstName": "Test",
         "id": "1",
         "lastName": "User",
@@ -58,7 +58,7 @@ Object {
     "signup": Object {
       "jwt": "JWT_TOKEN_STRING",
       "user": Object {
-        "email": "test@user.com",
+        "email": "new.user@test.com",
         "firstName": "Test",
         "id": "1",
         "lastName": "User",
@@ -79,7 +79,7 @@ exports[`able to update user password successfully 1`] = `
 Object {
   "data": Object {
     "updateUser": Object {
-      "email": "test@user.com",
+      "email": "test+user@email.com",
       "firstName": "Test",
       "id": "1",
       "lastName": "User",
@@ -99,7 +99,7 @@ exports[`able to update user profile successfully 1`] = `
 Object {
   "data": Object {
     "updateUser": Object {
-      "email": "updated+user@test.com",
+      "email": "test+user@email.com",
       "firstName": "Test",
       "id": "1",
       "lastName": "User",

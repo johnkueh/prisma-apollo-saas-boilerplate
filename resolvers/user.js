@@ -34,7 +34,7 @@ export default {
           firstName,
           lastName,
           email,
-          password: await hashedPassword(password),
+          password: hashedPassword(password),
           stripeCustomerId: await createCustomer({ email })
         });
 
@@ -50,7 +50,7 @@ export default {
     async login(parent, { email, password }, { prisma }, info) {
       const user = await prisma.user({ email });
 
-      if (user && (await bcrypt.compare(password, user.password))) {
+      if (user && bcrypt.compareSync(password, user.password)) {
         return {
           user,
           jwt: getJwt({
@@ -96,7 +96,7 @@ export default {
         await prisma.updateUser({
           where: { resetPasswordToken: token },
           data: {
-            password: await hashedPassword(password),
+            password: hashedPassword(password),
             resetPasswordToken: null
           }
         });
@@ -116,7 +116,7 @@ export default {
             firstName,
             lastName,
             email,
-            password: await hashedPassword(password)
+            password: hashedPassword(password)
           }
         });
       }
@@ -170,5 +170,5 @@ export default {
   }
 };
 
-const hashedPassword = password => bcrypt.hash(password, 10);
+const hashedPassword = password => bcrypt.hashSync(password, 10);
 const getJwt = ({ id, email }) => jsonwebtoken.sign({ id, email }, process.env.JWT_SECRET);
