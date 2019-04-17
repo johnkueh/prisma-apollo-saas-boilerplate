@@ -1,5 +1,6 @@
 import { createTestClient } from 'apollo-server-testing';
 import { ApolloServer } from 'apollo-server-express';
+import bcrypt from 'bcrypt';
 import { prisma } from '../../lib/prisma-mock';
 import typeDefs from '../../schema';
 import resolvers from '../../resolvers';
@@ -70,6 +71,15 @@ it('able to signup successfully', async () => {
     }
   });
 
+  expect(prisma.createUser).toHaveBeenCalledWith(
+    expect.objectContaining({
+      firstName: 'Test',
+      lastName: 'User',
+      email: 'new.user@test.com',
+      password: expect.any(String),
+      stripeCustomerId: 'cust_234'
+    })
+  );
   expect(res).toMatchSnapshot();
 });
 
@@ -84,6 +94,7 @@ it('returns correct error message when email is taken during signup', async () =
     }
   });
 
+  expect(prisma.user).toHaveBeenCalledWith({ email: 'test+user@email.com' });
   expect(res.errors[0].message).toBe('Email is already taken');
 });
 
@@ -101,6 +112,12 @@ it('able to update user profile successfully', async () => {
     }
   });
 
+  expect(prisma.updateUser).toHaveBeenCalledWith({
+    where: { id: 1 },
+    data: {
+      email: 'updated+user@test.com'
+    }
+  });
   expect(res).toMatchSnapshot();
 });
 
@@ -118,5 +135,13 @@ it('able to update user password successfully', async () => {
     }
   });
 
+  expect(prisma.updateUser).toHaveBeenCalledWith(
+    expect.objectContaining({
+      where: { id: 1 },
+      data: {
+        password: expect.any(String)
+      }
+    })
+  );
   expect(res).toMatchSnapshot();
 });
