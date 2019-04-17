@@ -1,0 +1,30 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`fetches user Me 1`] = `
+Object {
+  "data": Object {
+    "me": Object {
+      "createdAt": "1988-03-01T13:00:00.000Z",
+      "email": "john@beaconmaker.com",
+      "firstName": "John",
+      "fullName": "John Kueh",
+      "id": "1",
+      "lastName": "Kueh",
+      "periodEnd": "1988-11-10T13:00:00.000Z",
+      "periodStart": "1988-11-09T13:00:00.000Z",
+      "team": Object {
+        "id": "1",
+        "name": "A team name",
+      },
+      "updatedAt": "1988-03-02T13:00:00.000Z",
+    },
+  },
+  "errors": undefined,
+  "extensions": undefined,
+  "http": Object {
+    "headers": Headers {
+      Symbol(map): Object {},
+    },
+  },
+}
+`;

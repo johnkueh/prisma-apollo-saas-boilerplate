@@ -1,21 +1,23 @@
-export const ME = `
-query {
-  me {
-    id
-    firstName
-    lastName
-    fullName
-    email
-    createdAt
-    updatedAt
-    periodStart
-    periodEnd
-    team {
+import { gql } from 'apollo-server-express';
+
+export const ME = gql`
+  query {
+    me {
       id
-      name
+      firstName
+      lastName
+      fullName
+      email
+      createdAt
+      updatedAt
+      periodStart
+      periodEnd
+      team {
+        id
+        name
+      }
     }
   }
-}
 `;
 
 export const PAYMENT_HISTORY = `
