@@ -32,7 +32,7 @@ Object {
 exports[`able to login successfully 1`] = `
 Object {
   "data": Object {
-    "login": Object {
+    "Login": Object {
       "jwt": "JWT_TOKEN_STRING",
       "user": Object {
         "email": "test+user@email.com",
@@ -55,7 +55,7 @@ Object {
 exports[`able to signup successfully 1`] = `
 Object {
   "data": Object {
-    "signup": Object {
+    "Signup": Object {
       "jwt": "JWT_TOKEN_STRING",
       "user": Object {
         "email": "new.user@test.com",
@@ -78,7 +78,7 @@ Object {
 exports[`able to update user password successfully 1`] = `
 Object {
   "data": Object {
-    "updateUser": Object {
+    "UpdateUser": Object {
       "email": "test+user@email.com",
       "firstName": "Test",
       "id": "1",
@@ -98,7 +98,7 @@ Object {
 exports[`able to update user profile successfully 1`] = `
 Object {
   "data": Object {
-    "updateUser": Object {
+    "UpdateUser": Object {
       "email": "test+user@email.com",
       "firstName": "Test",
       "id": "1",

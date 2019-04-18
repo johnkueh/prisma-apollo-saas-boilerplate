@@ -42,10 +42,12 @@ describe('unauthenticated requests', () => {
     const res = await client.query({
       query: UPDATE_USER,
       variables: {
-        firstName: 'Test',
-        lastName: 'User',
-        email: 'test@user.com',
-        password: 'testpassword'
+        input: {
+          firstName: 'Test',
+          lastName: 'User',
+          email: 'test@user.com',
+          password: 'testpassword'
+        }
       }
     });
     expect(res.errors[0].message).toBe(errorMessage);

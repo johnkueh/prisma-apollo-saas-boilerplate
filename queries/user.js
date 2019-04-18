@@ -35,8 +35,8 @@ query {
 `;
 
 export const SIGNUP = `
-mutation Signup($firstName: String!, $lastName: String!, $email: String!, $password: String!) {
-  signup(firstName: $firstName, lastName: $lastName, email: $email, password: $password) {
+mutation Signup($input: SignupInput!) {
+  Signup(input: $input) {
     jwt
     user {
       id
@@ -49,8 +49,8 @@ mutation Signup($firstName: String!, $lastName: String!, $email: String!, $passw
 `;
 
 export const LOGIN = `
-mutation Login($email: String!, $password: String!) {
-  login(email: $email, password: $password) {
+mutation Login($input: LoginInput!) {
+  Login(input: $input) {
     jwt
     user {
       id
@@ -63,8 +63,8 @@ mutation Login($email: String!, $password: String!) {
 `;
 
 export const UPDATE_USER = `
-mutation UpdateUser($firstName: String, $lastName: String, $email: String, $password: String) {
-  updateUser(firstName: $firstName, lastName: $lastName, email: $email, password: $password) {
+mutation UpdateUser($input: UpdateUserInput!) {
+  UpdateUser(input: $input) {
     id
     firstName
     lastName
@@ -74,8 +74,8 @@ mutation UpdateUser($firstName: String, $lastName: String, $email: String, $pass
 `;
 
 export const FORGOT_PASSWORD = `
-mutation ForgotPassword($email: String!) {
-  forgotPassword(email: $email) {
+mutation ForgotPassword($input: ForgotPasswordInput!) {
+  ForgotPassword(input: $input) {
     message
   }
 }
@@ -83,7 +83,7 @@ mutation ForgotPassword($email: String!) {
 
 export const DELETE_USER = `
 mutation DeleteUser {
-  deleteUser {
+  DeleteUser {
     id
   }
 }

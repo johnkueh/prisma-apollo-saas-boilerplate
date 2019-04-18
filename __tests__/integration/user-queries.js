@@ -51,8 +51,10 @@ it('able to login successfully', async () => {
   const res = await client.query({
     query: LOGIN,
     variables: {
-      email: 'test+user@email.com',
-      password: 'testpassword'
+      input: {
+        email: 'test+user@email.com',
+        password: 'testpassword'
+      }
     }
   });
 
@@ -64,10 +66,12 @@ it('able to signup successfully', async () => {
   const res = await client.query({
     query: SIGNUP,
     variables: {
-      firstName: 'Test',
-      lastName: 'User',
-      email: 'new.user@test.com',
-      password: 'testpassword'
+      input: {
+        firstName: 'Test',
+        lastName: 'User',
+        email: 'new.user@test.com',
+        password: 'testpassword'
+      }
     }
   });
 
@@ -87,10 +91,12 @@ it('returns correct error message when email is taken during signup', async () =
   const res = await client.query({
     query: SIGNUP,
     variables: {
-      firstName: 'Test',
-      lastName: 'User',
-      email: 'test+user@email.com',
-      password: 'testpassword'
+      input: {
+        firstName: 'Test',
+        lastName: 'User',
+        email: 'test+user@email.com',
+        password: 'testpassword'
+      }
     }
   });
 
@@ -108,7 +114,9 @@ it('able to update user profile successfully', async () => {
   const res = await client.query({
     query: UPDATE_USER,
     variables: {
-      email: 'updated+user@test.com'
+      input: {
+        email: 'updated+user@test.com'
+      }
     }
   });
 
@@ -131,7 +139,9 @@ it('able to update user password successfully', async () => {
   const res = await client.query({
     query: UPDATE_USER,
     variables: {
-      password: 'newpassword'
+      input: {
+        password: 'newpassword'
+      }
     }
   });
 

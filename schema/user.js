@@ -7,16 +7,42 @@ export default gql`
   }
 
   extend type Mutation {
-    signup(firstName: String!, lastName: String!, email: String!, password: String!): AuthPayload!
-      @analytics(type: "identify")
-    login(email: String!, password: String!): AuthPayload! @analytics(type: "identify")
-    forgotPassword(email: String!): Result
-    resetPassword(password: String!, token: String!): Result
-    updateUser(firstName: String, lastName: String, email: String, password: String): User!
-      @requireAuth
-    deleteUser: User! @requireAuth
+    Signup(input: SignupInput!): AuthPayload! @analytics(type: "identify")
+    Login(input: LoginInput!): AuthPayload! @analytics(type: "identify")
+    ForgotPassword(input: ForgotPasswordInput!): Result
+    ResetPassword(input: ResetPasswordInput!): Result
+    UpdateUser(input: UpdateUserInput!): User! @requireAuth
     addCreditCard(token: String): Result @requireAuth
     subscribePlan(planId: String!): Result @requireAuth
+    DeleteUser: User! @requireAuth
+  }
+
+  input SignupInput {
+    firstName: String!
+    lastName: String!
+    email: String!
+    password: String!
+  }
+
+  input LoginInput {
+    email: String!
+    password: String!
+  }
+
+  input ForgotPasswordInput {
+    email: String!
+  }
+
+  input ResetPasswordInput {
+    email: String!
+    token: String!
+  }
+
+  input UpdateUserInput {
+    firstName: String
+    lastName: String
+    email: String
+    password: String
   }
 
   type AuthPayload {
