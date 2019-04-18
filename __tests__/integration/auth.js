@@ -42,10 +42,12 @@ describe('unauthenticated requests', () => {
     const res = await client.query({
       query: UPDATE_USER,
       variables: {
-        firstName: 'Test',
-        lastName: 'User',
-        email: 'test@user.com',
-        password: 'testpassword'
+        input: {
+          firstName: 'Test',
+          lastName: 'User',
+          email: 'test@user.com',
+          password: 'testpassword'
+        }
       }
     });
     expect(res.errors[0].message).toBe(errorMessage);
@@ -60,7 +62,9 @@ describe('unauthenticated requests', () => {
     const res = await client.query({
       query: ADD_CREDIT_CARD,
       variables: {
-        token: 'tok_123'
+        input: {
+          token: 'tok_123'
+        }
       }
     });
     expect(res.errors[0].message).toBe(errorMessage);
@@ -70,7 +74,9 @@ describe('unauthenticated requests', () => {
     const res = await client.query({
       query: SUBSCRIBE_PLAN,
       variables: {
-        planId: 'plan_123'
+        input: {
+          planId: 'plan_123'
+        }
       }
     });
     expect(res.errors[0].message).toBe(errorMessage);

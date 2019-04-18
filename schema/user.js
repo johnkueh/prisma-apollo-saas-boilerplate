@@ -2,21 +2,55 @@ import { gql } from 'apollo-server-express';
 
 export default gql`
   extend type Query {
-    me: User @requireAuth
-    paymentHistory: [Invoice] @requireAuth
+    Me: User @requireAuth
+    PaymentHistory: [Invoice] @requireAuth
   }
 
   extend type Mutation {
-    signup(firstName: String!, lastName: String!, email: String!, password: String!): AuthPayload!
-      @analytics(type: "identify")
-    login(email: String!, password: String!): AuthPayload! @analytics(type: "identify")
-    forgotPassword(email: String!): Result
-    resetPassword(password: String!, token: String!): Result
-    updateUser(firstName: String, lastName: String, email: String, password: String): User!
-      @requireAuth
-    deleteUser: User! @requireAuth
-    addCreditCard(token: String): Result @requireAuth
-    subscribePlan(planId: String!): Result @requireAuth
+    Signup(input: SignupInput!): AuthPayload! @analytics(type: "identify")
+    Login(input: LoginInput!): AuthPayload! @analytics(type: "identify")
+    ForgotPassword(input: ForgotPasswordInput!): Result
+    ResetPassword(input: ResetPasswordInput!): Result
+    UpdateUser(input: UpdateUserInput!): User! @requireAuth
+    AddCreditCard(input: AddCreditCardInput!): Result @requireAuth
+    SubscribePlan(input: SubscribePlanInput!): Result @requireAuth
+    DeleteUser: User! @requireAuth
+  }
+
+  input SignupInput {
+    firstName: String!
+    lastName: String!
+    email: String!
+    password: String!
+  }
+
+  input LoginInput {
+    email: String!
+    password: String!
+  }
+
+  input ForgotPasswordInput {
+    email: String!
+  }
+
+  input ResetPasswordInput {
+    password: String!
+    token: String!
+  }
+
+  input UpdateUserInput {
+    firstName: String
+    lastName: String
+    email: String
+    password: String
+  }
+
+  input AddCreditCardInput {
+    token: String!
+  }
+
+  input SubscribePlanInput {
+    planId: String!
   }
 
   type AuthPayload {

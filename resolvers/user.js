@@ -13,10 +13,10 @@ import { toCamelCase } from '../helpers/arrayUtils';
 
 export default {
   Query: {
-    async me(parent, args, { user, prisma }, info) {
+    async Me(parent, args, { user, prisma }, info) {
       return prisma.user({ id: user.id });
     },
-    async paymentHistory(parent, args, context, info) {
+    async PaymentHistory(parent, args, context, info) {
       const { stripeCustomerId: customerId } = context.user;
       const invoices = await listAllInvoices({
         customerId
@@ -26,7 +26,14 @@ export default {
     }
   },
   Mutation: {
-    async signup(parent, { firstName, lastName, email, password }, { prisma }, info) {
+    async Signup(
+      parent,
+      {
+        input: { firstName, lastName, email, password }
+      },
+      { prisma },
+      info
+    ) {
       if (await prisma.user({ email })) {
         throw new UserInputError('Email is already taken');
       } else {
@@ -47,7 +54,14 @@ export default {
         };
       }
     },
-    async login(parent, { email, password }, { prisma }, info) {
+    async Login(
+      parent,
+      {
+        input: { email, password }
+      },
+      { prisma },
+      info
+    ) {
       const user = await prisma.user({ email });
 
       if (user && bcrypt.compareSync(password, user.password)) {
@@ -62,7 +76,14 @@ export default {
 
       throw new AuthenticationError('Please check your credentials and try again.');
     },
-    async forgotPassword(parent, { email }, { prisma }, info) {
+    async ForgotPassword(
+      parent,
+      {
+        input: { email }
+      },
+      { prisma },
+      info
+    ) {
       const user = await prisma.user({ email });
 
       if (user) {
@@ -89,7 +110,14 @@ export default {
         message: 'A link to reset your password will be sent to your registered email.'
       };
     },
-    async resetPassword(parent, { password, token }, { prisma }, info) {
+    async ResetPassword(
+      parent,
+      {
+        input: { password, token }
+      },
+      { prisma },
+      info
+    ) {
       const dbUser = await prisma.user({ resetPasswordToken: token });
 
       if (dbUser) {
@@ -108,7 +136,14 @@ export default {
 
       throw new AuthenticationError('Password reset token is invalid.');
     },
-    async updateUser(parent, { firstName, lastName, email, password }, { user, prisma }, info) {
+    async UpdateUser(
+      parent,
+      {
+        input: { firstName, lastName, email, password }
+      },
+      { user, prisma },
+      info
+    ) {
       if (password) {
         return prisma.updateUser({
           where: { id: user.id },
@@ -130,7 +165,7 @@ export default {
         }
       });
     },
-    async deleteUser(
+    async DeleteUser(
       parent,
       args,
       {
@@ -141,9 +176,15 @@ export default {
     ) {
       return prisma.deleteUser({ id });
     },
-    async addCreditCard(parent, args, context, info) {
+    async AddCreditCard(
+      parent,
+      {
+        input: { token }
+      },
+      context,
+      info
+    ) {
       const { stripeCustomerId: customerId } = context.user;
-      const { token } = args;
 
       await createCard({
         token,
@@ -154,8 +195,14 @@ export default {
         message: 'Successfully updated billing information.'
       };
     },
-    async subscribePlan(parent, args, context, info) {
-      const { planId } = args;
+    async SubscribePlan(
+      parent,
+      {
+        input: { planId }
+      },
+      context,
+      info
+    ) {
       const { stripeCustomerId: customerId } = context.user;
 
       await createSubscription({
