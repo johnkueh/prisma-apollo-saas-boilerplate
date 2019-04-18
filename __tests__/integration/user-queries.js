@@ -1,6 +1,5 @@
 import { createTestClient } from 'apollo-server-testing';
 import { ApolloServer } from 'apollo-server-express';
-import bcrypt from 'bcrypt';
 import sgMail from '@sendgrid/mail';
 import Stripe from 'stripe';
 import { prisma } from '../../lib/prisma-mock';
@@ -332,4 +331,21 @@ it('able to subscribe to a plan', async () => {
   });
 
   expect(res.data.SubscribePlan.message).toBe('Successfully subscribed to plan.');
+});
+
+it('able to get payment history', async () => {
+  server.context = () => ({
+    prisma,
+    user: { id: 1, email: 'test+user@email.com', stripeCustomerId: 'cust_123' }
+  });
+
+  client = createTestClient(server);
+  const res = await client.query({
+    query: PAYMENT_HISTORY
+  });
+
+  expect(Stripe.mocks.invoices.list).toHaveBeenCalledWith({
+    customer: 'cust_123'
+  });
+  expect(res).toMatchSnapshot();
 });

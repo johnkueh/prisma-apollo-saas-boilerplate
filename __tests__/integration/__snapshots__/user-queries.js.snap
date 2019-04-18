@@ -1,5 +1,30 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`able to get payment history 1`] = `
+Object {
+  "data": Object {
+    "PaymentHistory": Array [
+      Object {
+        "amountDue": 20,
+        "amountPaid": 20,
+        "date": "2018-09-07T14:00:00.000Z",
+        "invoicePdf": "https://stripe.com/invoice",
+        "periodEnd": "2018-10-07T13:00:00.000Z",
+        "periodStart": "2018-09-07T14:00:00.000Z",
+        "status": "paid",
+      },
+    ],
+  },
+  "errors": undefined,
+  "extensions": undefined,
+  "http": Object {
+    "headers": Headers {
+      Symbol(map): Object {},
+    },
+  },
+}
+`;
+
 exports[`able to get user profile 1`] = `
 Object {
   "data": Object {
