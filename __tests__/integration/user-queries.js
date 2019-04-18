@@ -1,6 +1,8 @@
 import { createTestClient } from 'apollo-server-testing';
 import { ApolloServer } from 'apollo-server-express';
 import bcrypt from 'bcrypt';
+import sgMail from '@sendgrid/mail';
+import Stripe from 'stripe';
 import { prisma } from '../../lib/prisma-mock';
 import typeDefs from '../../schema';
 import resolvers from '../../resolvers';
@@ -12,6 +14,7 @@ import {
   LOGIN,
   UPDATE_USER,
   FORGOT_PASSWORD,
+  RESET_PASSWORD,
   DELETE_USER,
   ADD_CREDIT_CARD,
   SUBSCRIBE_PLAN
@@ -154,4 +157,179 @@ it('able to update user password successfully', async () => {
     })
   );
   expect(res).toMatchSnapshot();
+});
+
+it('not able to request forgot password if user doesnt exist', async () => {
+  server.context = () => ({
+    prisma,
+    user: { id: 1, email: 'test+user@email.com' }
+  });
+
+  client = createTestClient(server);
+  const res = await client.query({
+    query: FORGOT_PASSWORD,
+    variables: {
+      input: {
+        email: 'weird+user@email.com'
+      }
+    }
+  });
+
+  expect(prisma.user).toHaveBeenCalledWith({
+    email: 'weird+user@email.com'
+  });
+  expect(prisma.updateUser).not.toHaveBeenCalled();
+  expect(sgMail.send).not.toHaveBeenCalled();
+
+  // Sends this message back to the user irrespective of success or not
+  expect(res.data.ForgotPassword.message).toBe(
+    'A link to reset your password will be sent to your registered email.'
+  );
+});
+
+it('able to request forgot password successfully', async () => {
+  server.context = () => ({
+    prisma,
+    user: { id: 1, email: 'test+user@email.com' }
+  });
+
+  client = createTestClient(server);
+  const res = await client.query({
+    query: FORGOT_PASSWORD,
+    variables: {
+      input: {
+        email: 'test+user@email.com'
+      }
+    }
+  });
+
+  expect(prisma.user).toHaveBeenCalledWith({
+    email: 'test+user@email.com'
+  });
+  expect(prisma.updateUser).toHaveBeenCalledWith({
+    where: { email: 'test+user@email.com' },
+    data: {
+      resetPasswordToken: 'UUID-TOKEN'
+    }
+  });
+  expect(sgMail.send).toHaveBeenCalled();
+  expect(res.data.ForgotPassword.message).toBe(
+    'A link to reset your password will be sent to your registered email.'
+  );
+});
+
+it('able to reset password with correct token', async () => {
+  server.context = () => ({
+    prisma,
+    user: { id: 1, email: 'test+user@email.com' }
+  });
+
+  client = createTestClient(server);
+  const res = await client.query({
+    query: RESET_PASSWORD,
+    variables: {
+      input: {
+        password: 'newpassword',
+        token: 'RESET-PASSWORD-TOKEN'
+      }
+    }
+  });
+
+  expect(prisma.user).toHaveBeenCalledWith({
+    resetPasswordToken: 'RESET-PASSWORD-TOKEN'
+  });
+  expect(prisma.updateUser).toHaveBeenCalledWith({
+    where: { resetPasswordToken: 'RESET-PASSWORD-TOKEN' },
+    data: {
+      password: expect.any(String),
+      resetPasswordToken: null
+    }
+  });
+  expect(res.data.ResetPassword.message).toBe('Password updated successfully.');
+});
+
+it('not able to reset password with wrong token', async () => {
+  server.context = () => ({
+    prisma,
+    user: { id: 1, email: 'test+user@email.com' }
+  });
+
+  client = createTestClient(server);
+  const res = await client.query({
+    query: RESET_PASSWORD,
+    variables: {
+      input: {
+        password: 'newpassword',
+        token: 'RESET-PASSWORD-TOKEN-WRONG'
+      }
+    }
+  });
+
+  expect(prisma.user).toHaveBeenCalledWith({
+    resetPasswordToken: 'RESET-PASSWORD-TOKEN-WRONG'
+  });
+  expect(prisma.updateUser).not.toHaveBeenCalled();
+  expect(res).toMatchSnapshot();
+});
+
+it('able to delete user successfully', async () => {
+  server.context = () => ({
+    prisma,
+    user: { id: 1, email: 'test+user@email.com' }
+  });
+
+  client = createTestClient(server);
+  await client.query({
+    query: DELETE_USER
+  });
+
+  expect(prisma.deleteUser).toHaveBeenCalledWith({
+    id: 1
+  });
+});
+
+it('able to add credit card', async () => {
+  server.context = () => ({
+    prisma,
+    user: { id: 1, email: 'test+user@email.com', stripeCustomerId: 'cust_123' }
+  });
+
+  client = createTestClient(server);
+  const res = await client.query({
+    query: ADD_CREDIT_CARD,
+    variables: {
+      input: {
+        token: 'CREDIT-CARD-TOKEN'
+      }
+    }
+  });
+
+  expect(Stripe.mocks.customers.update).toHaveBeenCalledWith('cust_123', {
+    source: 'CREDIT-CARD-TOKEN'
+  });
+  expect(res.data.AddCreditCard.message).toBe('Successfully updated billing information.');
+});
+
+it('able to subscribe to a plan', async () => {
+  server.context = () => ({
+    prisma,
+    user: { id: 1, email: 'test+user@email.com', stripeCustomerId: 'cust_123' }
+  });
+
+  client = createTestClient(server);
+  const res = await client.query({
+    query: SUBSCRIBE_PLAN,
+    variables: {
+      input: {
+        planId: 'STRIPE-PLAN-ID'
+      }
+    }
+  });
+
+  expect(Stripe.mocks.subscriptions.create).toHaveBeenCalledWith({
+    customer: 'cust_123',
+    items: [{ plan: 'STRIPE-PLAN-ID' }]
+  });
+
+  expect(res.data.SubscribePlan.message).toBe('Successfully subscribed to plan.');
 });

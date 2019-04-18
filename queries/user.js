@@ -2,7 +2,7 @@ import { gql } from 'apollo-server-express';
 
 export const ME = gql`
   query {
-    me {
+    Me {
       id
       firstName
       lastName
@@ -22,7 +22,7 @@ export const ME = gql`
 
 export const PAYMENT_HISTORY = `
 query {
-  paymentHistory {
+  PaymentHistory {
     amountDue
     amountPaid
     invoicePdf
@@ -81,6 +81,14 @@ mutation ForgotPassword($input: ForgotPasswordInput!) {
 }
 `;
 
+export const RESET_PASSWORD = `
+mutation ResetPassword($input: ResetPasswordInput!) {
+  ResetPassword(input: $input) {
+    message
+  }
+}
+`;
+
 export const DELETE_USER = `
 mutation DeleteUser {
   DeleteUser {
@@ -90,16 +98,16 @@ mutation DeleteUser {
 `;
 
 export const ADD_CREDIT_CARD = `
-mutation AddCreditCard($token: String!) {
-  addCreditCard(token: $token) {
+mutation AddCreditCard($input: AddCreditCardInput!) {
+  AddCreditCard(input: $input) {
     message
   }
 }
 `;
 
 export const SUBSCRIBE_PLAN = `
-mutation SubscribePlan($planId: String!) {
-  subscribePlan(planId: $planId) {
+mutation SubscribePlan($input: SubscribePlanInput!) {
+  SubscribePlan(input: $input) {
     message
   }
 }

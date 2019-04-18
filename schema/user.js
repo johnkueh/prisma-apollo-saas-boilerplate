@@ -2,8 +2,8 @@ import { gql } from 'apollo-server-express';
 
 export default gql`
   extend type Query {
-    me: User @requireAuth
-    paymentHistory: [Invoice] @requireAuth
+    Me: User @requireAuth
+    PaymentHistory: [Invoice] @requireAuth
   }
 
   extend type Mutation {
@@ -12,8 +12,8 @@ export default gql`
     ForgotPassword(input: ForgotPasswordInput!): Result
     ResetPassword(input: ResetPasswordInput!): Result
     UpdateUser(input: UpdateUserInput!): User! @requireAuth
-    addCreditCard(token: String): Result @requireAuth
-    subscribePlan(planId: String!): Result @requireAuth
+    AddCreditCard(input: AddCreditCardInput!): Result @requireAuth
+    SubscribePlan(input: SubscribePlanInput!): Result @requireAuth
     DeleteUser: User! @requireAuth
   }
 
@@ -34,7 +34,7 @@ export default gql`
   }
 
   input ResetPasswordInput {
-    email: String!
+    password: String!
     token: String!
   }
 
@@ -43,6 +43,14 @@ export default gql`
     lastName: String
     email: String
     password: String
+  }
+
+  input AddCreditCardInput {
+    token: String!
+  }
+
+  input SubscribePlanInput {
+    planId: String!
   }
 
   type AuthPayload {

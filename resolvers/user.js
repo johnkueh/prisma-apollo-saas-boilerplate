@@ -13,10 +13,10 @@ import { toCamelCase } from '../helpers/arrayUtils';
 
 export default {
   Query: {
-    async me(parent, args, { user, prisma }, info) {
+    async Me(parent, args, { user, prisma }, info) {
       return prisma.user({ id: user.id });
     },
-    async paymentHistory(parent, args, context, info) {
+    async PaymentHistory(parent, args, context, info) {
       const { stripeCustomerId: customerId } = context.user;
       const invoices = await listAllInvoices({
         customerId
@@ -176,9 +176,15 @@ export default {
     ) {
       return prisma.deleteUser({ id });
     },
-    async addCreditCard(parent, args, context, info) {
+    async AddCreditCard(
+      parent,
+      {
+        input: { token }
+      },
+      context,
+      info
+    ) {
       const { stripeCustomerId: customerId } = context.user;
-      const { token } = args;
 
       await createCard({
         token,
@@ -189,8 +195,14 @@ export default {
         message: 'Successfully updated billing information.'
       };
     },
-    async subscribePlan(parent, args, context, info) {
-      const { planId } = args;
+    async SubscribePlan(
+      parent,
+      {
+        input: { planId }
+      },
+      context,
+      info
+    ) {
       const { stripeCustomerId: customerId } = context.user;
 
       await createSubscription({
