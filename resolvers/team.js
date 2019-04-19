@@ -2,7 +2,14 @@ import { UserInputError } from 'apollo-server';
 
 export default {
   Mutation: {
-    async createTeam(parent, { name }, { user, prisma }, info) {
+    async CreateTeam(
+      parent,
+      {
+        input: { name }
+      },
+      { user, prisma },
+      info
+    ) {
       const team = await prisma.user({ id: user.id }).team();
       if (team) {
         throw new UserInputError('You have already created a team.');
@@ -21,7 +28,14 @@ export default {
           .team();
       }
     },
-    async updateTeam(parent, { name }, { user, prisma }, info) {
+    async UpdateTeam(
+      parent,
+      {
+        input: { name }
+      },
+      { user, prisma },
+      info
+    ) {
       const team = await prisma.user({ id: user.id }).team();
       if (team) {
         return prisma.updateTeam({

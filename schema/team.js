@@ -2,11 +2,21 @@ import { gql } from 'apollo-server-express';
 
 export default gql`
   extend type Mutation {
-    createTeam(name: String!): Team!
+    CreateTeam(input: CreateTeamInput!): Team!
       @requireAuth
       @analytics(type: "track", event: "Create Team")
       @analytics_group(type: "group")
-    updateTeam(name: String!): Team! @requireAuth @analytics(type: "track", event: "Update Team")
+    UpdateTeam(input: UpdateTeamInput!): Team!
+      @requireAuth
+      @analytics(type: "track", event: "Update Team")
+  }
+
+  input CreateTeamInput {
+    name: String!
+  }
+
+  input UpdateTeamInput {
+    name: String!
   }
 
   type Team {
