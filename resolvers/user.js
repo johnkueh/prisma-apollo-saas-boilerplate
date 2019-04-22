@@ -133,14 +133,11 @@ export default {
 
       throw new AuthenticationError('Password reset token is invalid.');
     },
-    async UpdateUser(
-      parent,
-      {
-        input: { firstName, lastName, email, password }
-      },
-      { user, prisma },
-      info
-    ) {
+    async UpdateUser(parent, { input }, { user, prisma }, info) {
+      await validateUser(input);
+
+      const { firstName, lastName, email, password } = input;
+
       if (password) {
         return prisma.updateUser({
           where: { id: user.id },

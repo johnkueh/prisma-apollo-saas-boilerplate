@@ -181,6 +181,36 @@ it('able to update user password successfully', async () => {
   expect(res).toMatchSnapshot();
 });
 
+describe('Update user validation errors', () => {
+  it('returns correct error messages', async () => {
+    server.context = () => ({
+      prisma,
+      user: { id: 1, email: 'test@user.com' }
+    });
+
+    client = createTestClient(server);
+
+    const res = await client.query({
+      query: UPDATE_USER,
+      variables: {
+        input: {
+          firstName: '',
+          lastName: '',
+          email: 'test+user@.com',
+          password: ''
+        }
+      }
+    });
+
+    expect(res.errors[0].extensions.exception.errors).toEqual({
+      firstName: 'First name must be at least 1 characters',
+      lastName: 'Last name must be at least 1 characters',
+      email: 'Email must be a valid email',
+      password: 'Password must be at least 6 characters'
+    });
+  });
+});
+
 it('not able to request forgot password if user doesnt exist', async () => {
   server.context = () => ({
     prisma,
