@@ -10,7 +10,7 @@ import {
   listAllInvoices
 } from '../services/stripe';
 import { toCamelCase } from '../helpers/arrayUtils';
-import Validator from '../validators';
+import { validateUser } from '../validators/user';
 
 export default {
   Query: {
@@ -28,7 +28,7 @@ export default {
   },
   Mutation: {
     async Signup(parent, { input }, { prisma }, info) {
-      await Validator.validate({ type: 'user', input });
+      await validateUser(input);
 
       const { firstName, lastName, email, password } = input;
       if (await prisma.user({ email })) {

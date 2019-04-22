@@ -1,6 +1,7 @@
 import * as yup from 'yup';
+import validate from './validate';
 
-export default yup.object().shape({
+const schema = yup.object().shape({
   firstName: yup
     .string()
     .label('First name')
@@ -17,3 +18,9 @@ export default yup.object().shape({
     .min(1),
   password: yup.string().min(6)
 });
+
+export const validateUser = input => validate({ input, schema });
+
+export default {
+  validateUser
+};
