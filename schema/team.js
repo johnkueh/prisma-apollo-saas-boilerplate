@@ -12,7 +12,7 @@ export default gql`
   }
 
   input CreateTeamInput {
-    name: String!
+    name: String! @validate(required: true)
   }
 
   input UpdateTeamInput {

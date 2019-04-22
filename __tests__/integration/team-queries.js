@@ -98,3 +98,24 @@ it('able to update team name for user', async () => {
   });
   expect(res).toMatchSnapshot();
 });
+
+it('returns error if team name not provided', async () => {
+  server.context = () => ({
+    prisma,
+    user: { id: 1, email: 'test+user@email.com' }
+  });
+
+  client = createTestClient(server);
+  const res = await client.query({
+    query: UPDATE_TEAM,
+    variables: {
+      input: {
+        name: ''
+      }
+    }
+  });
+
+  expect(res.errors[0].extensions.exception.errors[0].message).toBe(
+    'Team name must be at least 1 character'
+  );
+});

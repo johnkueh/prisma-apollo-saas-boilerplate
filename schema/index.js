@@ -10,6 +10,7 @@ const linkSchema = gql`
   directive @analytics(type: String!, event: String) on FIELD_DEFINITION
   directive @analytics_group(type: String!, event: String) on FIELD_DEFINITION
   directive @computed(value: String) on FIELD_DEFINITION
+  directive @validate(required: Boolean) on INPUT_FIELD_DEFINITION
 
   type Query {
     _: Boolean
