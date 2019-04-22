@@ -1,10 +1,10 @@
-import analyticsDirective from './analytics';
-import computedDirective from './computed';
-import requireAuthDirective from './require-auth';
+import analytics from './analytics';
+import computed from './computed';
+import requireAuth from './require-auth';
 
 export default {
-  requireAuth: requireAuthDirective,
-  computed: computedDirective,
-  analytics: analyticsDirective,
-  analytics_group: analyticsDirective
+  requireAuth,
+  computed,
+  analytics,
+  analytics_group: analytics
 };

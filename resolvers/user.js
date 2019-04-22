@@ -10,6 +10,7 @@ import {
   listAllInvoices
 } from '../services/stripe';
 import { toCamelCase } from '../helpers/arrayUtils';
+import { validateUser } from '../validators/user';
 
 export default {
   Query: {
@@ -26,14 +27,10 @@ export default {
     }
   },
   Mutation: {
-    async Signup(
-      parent,
-      {
-        input: { firstName, lastName, email, password }
-      },
-      { prisma },
-      info
-    ) {
+    async Signup(parent, { input }, { prisma }, info) {
+      await validateUser(input);
+
+      const { firstName, lastName, email, password } = input;
       if (await prisma.user({ email })) {
         throw new UserInputError('Email is already taken');
       } else {
@@ -136,14 +133,11 @@ export default {
 
       throw new AuthenticationError('Password reset token is invalid.');
     },
-    async UpdateUser(
-      parent,
-      {
-        input: { firstName, lastName, email, password }
-      },
-      { user, prisma },
-      info
-    ) {
+    async UpdateUser(parent, { input }, { user, prisma }, info) {
+      await validateUser(input);
+
+      const { firstName, lastName, email, password } = input;
+
       if (password) {
         return prisma.updateUser({
           where: { id: user.id },

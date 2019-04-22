@@ -1,4 +1,6 @@
+import _ from 'lodash';
 import { UserInputError } from 'apollo-server';
+import { validateTeam } from '../validators/team';
 
 export default {
   Mutation: {
@@ -28,14 +30,10 @@ export default {
           .team();
       }
     },
-    async UpdateTeam(
-      parent,
-      {
-        input: { name }
-      },
-      { user, prisma },
-      info
-    ) {
+    async UpdateTeam(parent, { input }, { user, prisma }, info) {
+      await validateTeam(input);
+
+      const { name } = input;
       const team = await prisma.user({ id: user.id }).team();
       if (team) {
         return prisma.updateTeam({
