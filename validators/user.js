@@ -1,0 +1,19 @@
+import * as yup from 'yup';
+
+export default yup.object().shape({
+  firstName: yup
+    .string()
+    .label('First name')
+    .min(1)
+    .max(15),
+  lastName: yup
+    .string()
+    .label('Last name')
+    .min(1)
+    .max(15),
+  email: yup
+    .string()
+    .email()
+    .min(1),
+  password: yup.string().min(6)
+});

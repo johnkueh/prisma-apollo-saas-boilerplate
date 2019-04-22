@@ -89,21 +89,44 @@ it('able to signup successfully', async () => {
   expect(res).toMatchSnapshot();
 });
 
-it('returns correct error message when email is taken during signup', async () => {
-  const res = await client.query({
-    query: SIGNUP,
-    variables: {
-      input: {
-        firstName: 'Test',
-        lastName: 'User',
-        email: 'test+user@email.com',
-        password: 'testpassword'
+describe('signup - validation errors', () => {
+  it('returns correct error messages', async () => {
+    const res = await client.query({
+      query: SIGNUP,
+      variables: {
+        input: {
+          firstName: '',
+          lastName: '',
+          email: 'test+user@.com',
+          password: ''
+        }
       }
-    }
+    });
+
+    expect(res.errors[0].extensions.exception.errors).toEqual({
+      firstName: 'First name must be at least 1 characters',
+      lastName: 'Last name must be at least 1 characters',
+      email: 'Email must be a valid email',
+      password: 'Password must be at least 6 characters'
+    });
   });
 
-  expect(prisma.user).toHaveBeenCalledWith({ email: 'test+user@email.com' });
-  expect(res.errors[0].message).toBe('Email is already taken');
+  it('returns correct error message when email is taken during signup', async () => {
+    const res = await client.query({
+      query: SIGNUP,
+      variables: {
+        input: {
+          firstName: 'Test',
+          lastName: 'User',
+          email: 'test+user@email.com',
+          password: 'testpassword'
+        }
+      }
+    });
+
+    expect(prisma.user).toHaveBeenCalledWith({ email: 'test+user@email.com' });
+    expect(res.errors[0].message).toBe('Email is already taken');
+  });
 });
 
 it('able to update user profile successfully', async () => {

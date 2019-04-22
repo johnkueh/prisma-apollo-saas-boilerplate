@@ -10,6 +10,7 @@ import {
   listAllInvoices
 } from '../services/stripe';
 import { toCamelCase } from '../helpers/arrayUtils';
+import Validator from '../validators';
 
 export default {
   Query: {
@@ -26,14 +27,10 @@ export default {
     }
   },
   Mutation: {
-    async Signup(
-      parent,
-      {
-        input: { firstName, lastName, email, password }
-      },
-      { prisma },
-      info
-    ) {
+    async Signup(parent, { input }, { prisma }, info) {
+      await Validator.validate({ type: 'user', input });
+
+      const { firstName, lastName, email, password } = input;
       if (await prisma.user({ email })) {
         throw new UserInputError('Email is already taken');
       } else {

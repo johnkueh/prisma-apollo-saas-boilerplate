@@ -115,7 +115,7 @@ it('returns error if team name not provided', async () => {
     }
   });
 
-  expect(res.errors[0].extensions.exception.errors[0].message).toBe(
+  expect(res.errors[0].extensions.exception.errors.name).toBe(
     'Team name must be at least 1 character'
   );
 });
