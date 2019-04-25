@@ -35,6 +35,13 @@ export const listAllInvoices = async ({ customerId }) => {
   return res.data;
 };
 
+export const listAllPlans = async () => {
+  const res = await stripe().plans.list({
+    product: process.env.STRIPE_PRODUCT_ID
+  });
+  return res.data;
+};
+
 export const handleWebhook = ({ req, res, handleSubscriptionUpdated }) => {
   const json = JSON.parse(req.body);
   const {

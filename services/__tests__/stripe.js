@@ -4,6 +4,7 @@ import {
   createCard,
   createSubscription,
   listAllInvoices,
+  listAllPlans,
   handleWebhook
 } from '../stripe';
 
@@ -70,6 +71,12 @@ it('lists all invoices for a customer', async () => {
       period_end: new Date(2018, 9, 8)
     }
   ]);
+});
+
+it('lists all plans', async () => {
+  const resp = await listAllPlans();
+  expect(Stripe.mocks.plans.list).toHaveBeenCalledTimes(1);
+  expect(resp).toMatchSnapshot();
 });
 
 const mockData = {
