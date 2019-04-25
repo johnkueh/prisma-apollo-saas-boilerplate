@@ -76,7 +76,32 @@ it('lists all invoices for a customer', async () => {
 it('lists all plans', async () => {
   const resp = await listAllPlans();
   expect(Stripe.mocks.plans.list).toHaveBeenCalledTimes(1);
-  expect(resp).toMatchSnapshot();
+  expect(resp).toEqual([
+    {
+      id: 'plan_EwhdWAyl20lY3r',
+      title: 'Agency - Monthly',
+      description: '10 projects, unlimited API calls',
+      amount: 6000,
+      currency: 'aud',
+      interval: 'month'
+    },
+    {
+      id: 'plan_EwhcP2qanL2la9',
+      title: 'Freelancer - Monthly',
+      description: '3 projects, unlimited API calls',
+      amount: 3000,
+      currency: 'aud',
+      interval: 'month'
+    },
+    {
+      id: 'plan_EwhcFkDkq3Wfzr',
+      title: 'Free - Monthly',
+      description: '1 project, 500 API calls per day',
+      amount: 0,
+      currency: 'aud',
+      interval: 'month'
+    }
+  ]);
 });
 
 const mockData = {

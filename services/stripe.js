@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import Stripe from 'stripe';
 
 const stripe = () => new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -39,7 +40,17 @@ export const listAllPlans = async () => {
   const res = await stripe().plans.list({
     product: process.env.STRIPE_PRODUCT_ID
   });
-  return res.data;
+  return _.map(
+    res.data,
+    ({ id, nickname: title, amount, metadata: { description }, currency, interval }) => ({
+      id,
+      title,
+      amount,
+      currency,
+      interval,
+      description
+    })
+  );
 };
 
 export const handleWebhook = ({ req, res, handleSubscriptionUpdated }) => {

@@ -1,0 +1,41 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`able to retrieve all plans 1`] = `
+Object {
+  "data": Object {
+    "Plans": Array [
+      Object {
+        "amount": 6000,
+        "currency": "aud",
+        "description": "10 projects, unlimited API calls",
+        "id": "plan_EwhdWAyl20lY3r",
+        "interval": "month",
+        "title": "Agency - Monthly",
+      },
+      Object {
+        "amount": 3000,
+        "currency": "aud",
+        "description": "3 projects, unlimited API calls",
+        "id": "plan_EwhcP2qanL2la9",
+        "interval": "month",
+        "title": "Freelancer - Monthly",
+      },
+      Object {
+        "amount": 0,
+        "currency": "aud",
+        "description": "1 project, 500 API calls per day",
+        "id": "plan_EwhcFkDkq3Wfzr",
+        "interval": "month",
+        "title": "Free - Monthly",
+      },
+    ],
+  },
+  "errors": undefined,
+  "extensions": undefined,
+  "http": Object {
+    "headers": Headers {
+      Symbol(map): Object {},
+    },
+  },
+}
+`;
