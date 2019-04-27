@@ -31,30 +31,31 @@ export default {
       await validateUser(input);
 
       const { firstName, lastName, email, password, inviteId } = input;
-      const params = {
-        firstName,
-        lastName,
-        email,
-        password: hashedPassword(password),
-        stripeCustomerId: await createCustomer({ email })
-      };
       const existingUser = await prisma.user({ email });
+      let team = null;
 
       if (existingUser) {
         throw new UserInputError('Email is already taken');
       } else {
         if (inviteId) {
-          const team = await prisma.invite({ id: inviteId }).team();
-          if (team) {
-            params.team = {
+          const invitedTeam = await prisma.invite({ id: inviteId }).team();
+          if (invitedTeam) {
+            team = {
               connect: {
-                id: team.id
+                id: invitedTeam.id
               }
             };
           }
         }
 
-        const user = await prisma.createUser(params);
+        const user = await prisma.createUser({
+          firstName,
+          lastName,
+          email,
+          password: hashedPassword(password),
+          stripeCustomerId: await createCustomer({ email }),
+          team
+        });
 
         return {
           user,
