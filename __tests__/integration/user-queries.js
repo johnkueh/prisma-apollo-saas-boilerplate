@@ -450,3 +450,34 @@ it('able to invite other users to join a team', async () => {
   );
   expect(res).toMatchSnapshot();
 });
+
+it('able to signup successfully via an invite', async () => {
+  const res = await client.query({
+    query: SIGNUP,
+    variables: {
+      input: {
+        firstName: 'Test',
+        lastName: 'User',
+        email: 'new.user@test.com',
+        password: 'testpassword',
+        inviteId: 'invitation-id'
+      }
+    }
+  });
+
+  expect(prisma.createUser).toHaveBeenCalledWith(
+    expect.objectContaining({
+      firstName: 'Test',
+      lastName: 'User',
+      email: 'new.user@test.com',
+      password: expect.any(String),
+      stripeCustomerId: 'cust_234',
+      team: {
+        connect: {
+          id: 1
+        }
+      }
+    })
+  );
+  expect(res).toMatchSnapshot();
+});

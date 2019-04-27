@@ -120,6 +120,29 @@ Object {
 }
 `;
 
+exports[`able to signup successfully via an invite 1`] = `
+Object {
+  "data": Object {
+    "Signup": Object {
+      "jwt": "JWT_TOKEN_STRING",
+      "user": Object {
+        "email": "new.user@test.com",
+        "firstName": "Test",
+        "id": "1",
+        "lastName": "User",
+      },
+    },
+  },
+  "errors": undefined,
+  "extensions": undefined,
+  "http": Object {
+    "headers": Headers {
+      Symbol(map): Object {},
+    },
+  },
+}
+`;
+
 exports[`able to update user password successfully 1`] = `
 Object {
   "data": Object {
