@@ -3,6 +3,7 @@ import { gql } from 'apollo-server-express';
 import userSchema from './user';
 import teamSchema from './team';
 import planSchema from './plan';
+import inviteUserSchema from './invite-user';
 
 const linkSchema = gql`
   scalar DateTime
@@ -23,4 +24,4 @@ const linkSchema = gql`
   # }
 `;
 
-export default [linkSchema, userSchema, teamSchema, planSchema];
+export default [linkSchema, userSchema, teamSchema, planSchema, inviteUserSchema];

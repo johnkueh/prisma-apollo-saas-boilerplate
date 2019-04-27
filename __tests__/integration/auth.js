@@ -9,7 +9,8 @@ import {
   UPDATE_USER,
   DELETE_USER,
   ADD_CREDIT_CARD,
-  SUBSCRIBE_PLAN
+  SUBSCRIBE_PLAN,
+  INVITE_USER
 } from '../../queries/user';
 
 let client;
@@ -76,6 +77,20 @@ describe('unauthenticated requests', () => {
       variables: {
         input: {
           planId: 'plan_123'
+        }
+      }
+    });
+    expect(res.errors[0].message).toBe(errorMessage);
+  });
+
+  it('shows authentication error for INVITE_USER', async () => {
+    const res = await client.query({
+      query: INVITE_USER,
+      variables: {
+        input: {
+          firstName: 'Jacky',
+          lastName: 'Chan',
+          email: 'jacky@chan.com'
         }
       }
     });

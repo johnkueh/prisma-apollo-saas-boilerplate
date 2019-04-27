@@ -16,7 +16,8 @@ import {
   RESET_PASSWORD,
   DELETE_USER,
   ADD_CREDIT_CARD,
-  SUBSCRIBE_PLAN
+  SUBSCRIBE_PLAN,
+  INVITE_USER
 } from '../../queries/user';
 
 let server;
@@ -400,5 +401,52 @@ it('able to get payment history', async () => {
   expect(Stripe.mocks.invoices.list).toHaveBeenCalledWith({
     customer: 'cust_123'
   });
+  expect(res).toMatchSnapshot();
+});
+
+it('able to invite other users to join a team', async () => {
+  server.context = () => ({
+    prisma,
+    user: { id: 1, email: 'test+user@email.com', stripeCustomerId: 'cust_123' }
+  });
+
+  client = createTestClient(server);
+  const res = await client.query({
+    query: INVITE_USER,
+    variables: {
+      input: {
+        firstName: 'Jacky',
+        lastName: 'Chan',
+        email: 'jacky@chan.com'
+      }
+    }
+  });
+
+  expect(prisma.createInvite).toHaveBeenCalledWith({
+    email: 'jacky@chan.com',
+    firstName: 'Jacky',
+    lastName: 'Chan',
+    user: {
+      connect: {
+        id: 1
+      }
+    },
+    team: {
+      connect: {
+        id: 1
+      }
+    }
+  });
+
+  expect(sgMail.send).toHaveBeenCalledWith(
+    expect.objectContaining({
+      to: 'jacky@chan.com',
+      dynamic_template_data: {
+        invitee: 'Jacky Chan',
+        inviter: 'test+user@email.com',
+        signUpLink: expect.any(String)
+      }
+    })
+  );
   expect(res).toMatchSnapshot();
 });

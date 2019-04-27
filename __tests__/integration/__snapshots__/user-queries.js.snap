@@ -54,6 +54,26 @@ Object {
 }
 `;
 
+exports[`able to invite other users to join a team 1`] = `
+Object {
+  "data": Object {
+    "InviteUser": Object {
+      "email": "jacky@chan.com",
+      "firstName": "Jacky",
+      "lastName": "Chan",
+      "status": "Pending",
+    },
+  },
+  "errors": undefined,
+  "extensions": undefined,
+  "http": Object {
+    "headers": Headers {
+      Symbol(map): Object {},
+    },
+  },
+}
+`;
+
 exports[`able to login successfully 1`] = `
 Object {
   "data": Object {

@@ -112,3 +112,14 @@ mutation SubscribePlan($input: SubscribePlanInput!) {
   }
 }
 `;
+
+export const INVITE_USER = `
+mutation InviteUser($input: InviteUserInput!) {
+  InviteUser(input: $input) {
+    email
+    firstName
+    lastName
+    status
+  }
+}
+`;

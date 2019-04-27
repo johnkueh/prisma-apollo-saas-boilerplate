@@ -20,3 +20,20 @@ type Team {
   createdAt: DateTime!
   updatedAt: DateTime!
 }
+
+type Invite {
+  id: ID! @unique
+  firstName: String!
+  lastName: String!
+  email: String!
+  status: Status! @default(value: "Pending")
+  user: User
+  team: Team
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+enum Status {
+  Pending
+  Accepted
+}
