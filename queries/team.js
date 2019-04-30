@@ -1,5 +1,3 @@
-import { gql } from 'apollo-server-express';
-
 export const CREATE_TEAM = `
 mutation CreateTeam($input: CreateTeamInput!) {
   CreateTeam(input: $input) {

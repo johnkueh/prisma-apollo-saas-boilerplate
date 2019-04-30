@@ -1,38 +1,39 @@
-import { createTestClient } from 'apollo-server-testing';
-import { ApolloServer } from 'apollo-server-express';
-import Stripe from 'stripe';
-import { prisma } from '../../lib/prisma-mock';
-import typeDefs from '../../schema';
-import resolvers from '../../resolvers';
-import schemaDirectives from '../../directives';
+import { graphqlRequest, prisma } from '../../lib/test-util';
+import { SIGNUP } from '../../queries/user';
 import { PLANS } from '../../queries/plan';
 
-let server;
-let client;
+let user;
+let jwt;
 
 beforeEach(async () => {
-  server = await new ApolloServer({
-    typeDefs,
-    resolvers,
-    schemaDirectives,
-    context: () => ({
-      prisma
-    })
-  });
-  client = createTestClient(server);
+  ({
+    data: {
+      Signup: { user, jwt }
+    }
+  } = await graphqlRequest({
+    query: SIGNUP,
+    variables: {
+      input: {
+        firstName: 'Test',
+        lastName: 'User',
+        email: 'test@user.com',
+        password: 'testpassword'
+      }
+    }
+  }));
+});
+
+afterEach(async () => {
+  await prisma.deleteManyUsers();
 });
 
 it('able to retrieve all plans', async () => {
-  server.context = () => ({
-    prisma,
-    user: { id: 1, email: 'test@user.com' }
-  });
-
-  client = createTestClient(server);
-  const res = await client.query({
+  const res = await graphqlRequest({
+    headers: {
+      Authorization: `Bearer ${jwt}`
+    },
     query: PLANS
   });
 
-  expect(Stripe.mocks.plans.list).toBeCalledTimes(1);
   expect(res).toMatchSnapshot();
 });

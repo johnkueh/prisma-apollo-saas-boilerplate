@@ -2,13 +2,17 @@ const Stripe = jest.genMockFromModule('stripe');
 
 Stripe.mocks = {
   customers: {
-    create: jest.fn().mockResolvedValue({
-      id: 'cust_234'
-    }),
-    update: jest.fn().mockResolvedValue({
-      token: 'tok_234',
-      customerId: 'cust_234'
-    })
+    create: jest.fn().mockImplementation(({ email }) =>
+      Promise.resolve({
+        id: `cust_${email}`
+      })
+    ),
+    update: jest.fn().mockImplementation((customerId, { source: token }) =>
+      Promise.resolve({
+        token,
+        customerId
+      })
+    )
   },
   subscriptions: {
     create: jest.fn().mockResolvedValue({

@@ -21,44 +21,44 @@ it('creates customer and returns a customer id', async () => {
     name: 'John',
     email: 'john@doe.com'
   });
-  expect(id).toEqual('cust_234');
+  expect(id).toEqual(expect.stringContaining('cust_'));
 });
 
 it('updates customer with token', async () => {
   const resp = await createCard({
     token: 'cust_token',
-    customerId: 'cust_234'
+    customerId: 'cust_123'
   });
-  expect(Stripe.mocks.customers.update).toHaveBeenCalledWith('cust_234', {
+  expect(Stripe.mocks.customers.update).toHaveBeenCalledWith(expect.stringContaining('cust_'), {
     source: 'cust_token'
   });
   expect(resp).toEqual({
-    token: 'tok_234',
-    customerId: 'cust_234'
+    token: 'cust_token',
+    customerId: expect.stringContaining('cust_')
   });
 });
 
 it('subscribes customer to a plan', async () => {
   const resp = await createSubscription({
-    customerId: 'cust_234',
+    customerId: expect.stringContaining('cust_'),
     planId: 'annual_premium'
   });
   expect(Stripe.mocks.subscriptions.create).toHaveBeenCalledWith({
-    customer: 'cust_234',
+    customer: expect.stringContaining('cust_'),
     items: [{ plan: 'annual_premium' }]
   });
   expect(resp).toEqual({
     planId: 'annual_premium',
-    customerId: 'cust_234'
+    customerId: expect.stringContaining('cust_')
   });
 });
 
 it('lists all invoices for a customer', async () => {
   const resp = await listAllInvoices({
-    customerId: 'cust_234'
+    customerId: expect.stringContaining('cust_')
   });
   expect(Stripe.mocks.invoices.list).toHaveBeenCalledWith({
-    customer: 'cust_234'
+    customer: expect.stringContaining('cust_')
   });
   expect(resp).toEqual([
     {

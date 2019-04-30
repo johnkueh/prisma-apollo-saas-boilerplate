@@ -1,121 +1,129 @@
-import { createTestClient } from 'apollo-server-testing';
-import { ApolloServer } from 'apollo-server-express';
-import sgMail from '@sendgrid/mail';
-import Stripe from 'stripe';
-import { prisma } from '../../lib/prisma-mock';
-import typeDefs from '../../schema';
-import resolvers from '../../resolvers';
-import schemaDirectives from '../../directives';
+import { graphqlRequest, prisma } from '../../lib/test-util';
+import { SIGNUP } from '../../queries/user';
 import { CREATE_TEAM, UPDATE_TEAM } from '../../queries/team';
 
-let server;
-let client;
+describe('Team queries', () => {
+  let user;
+  let jwt;
 
-beforeEach(async () => {
-  server = await new ApolloServer({
-    typeDefs,
-    resolvers,
-    schemaDirectives,
-    context: () => ({
-      prisma
-    })
-  });
-  client = createTestClient(server);
-});
-
-it('creating a team when team already exists returns an error', async () => {
-  server.context = () => ({
-    prisma,
-    user: { id: 1, email: 'test+user@email.com' }
-  });
-
-  client = createTestClient(server);
-  const res = await client.query({
-    query: CREATE_TEAM,
-    variables: {
-      input: {
-        name: 'Team name'
+  beforeEach(async () => {
+    ({
+      data: {
+        Signup: { user, jwt }
       }
-    }
-  });
-
-  expect(prisma.user).toHaveBeenCalledWith({ id: 1 });
-  expect(res).toMatchSnapshot();
-});
-
-it('able to create team for user', async () => {
-  server.context = () => ({
-    prisma,
-    user: { id: 2, email: 'user+no+team@email.com' }
-  });
-
-  client = createTestClient(server);
-  const res = await client.query({
-    query: CREATE_TEAM,
-    variables: {
-      input: {
-        name: 'A new team name'
+    } = await graphqlRequest({
+      query: SIGNUP,
+      variables: {
+        input: {
+          firstName: 'Test',
+          lastName: 'User',
+          email: 'test@user.com',
+          password: 'testpassword'
+        }
       }
-    }
+    }));
   });
 
-  expect(prisma.user).toHaveBeenCalledWith({ id: 2 });
-  expect(prisma.updateUser).toHaveBeenCalledWith({
-    where: { id: 2 },
-    data: {
-      team: {
-        create: {
+  afterEach(async () => {
+    await prisma.deleteManyUsers();
+    await prisma.deleteManyTeams();
+  });
+
+  it('creating a team when team already exists returns an error', async () => {
+    await prisma.updateUser({
+      where: { email: user.email },
+      data: {
+        team: {
+          create: {
+            name: 'Existing team'
+          }
+        }
+      }
+    });
+
+    const res = await graphqlRequest({
+      headers: {
+        Authorization: `Bearer ${jwt}`
+      },
+      query: CREATE_TEAM,
+      variables: {
+        input: {
+          name: 'New team name'
+        }
+      }
+    });
+
+    expect(res.errors[0].message).toEqual('You have already created a team.');
+  });
+
+  it('able to create team for user', async () => {
+    const res = await graphqlRequest({
+      headers: {
+        Authorization: `Bearer ${jwt}`
+      },
+      query: CREATE_TEAM,
+      variables: {
+        input: {
           name: 'A new team name'
         }
       }
-    }
-  });
-  expect(res).toMatchSnapshot();
-});
+    });
 
-it('able to update team name for user', async () => {
-  server.context = () => ({
-    prisma,
-    user: { id: 1, email: 'test+user@email.com' }
+    expect(res.data).toEqual({
+      CreateTeam: {
+        id: expect.any(String),
+        name: 'A new team name'
+      }
+    });
   });
 
-  client = createTestClient(server);
-  const res = await client.query({
-    query: UPDATE_TEAM,
-    variables: {
-      input: {
+  it('able to update team name for user', async () => {
+    await prisma.updateUser({
+      where: { email: user.email },
+      data: {
+        team: {
+          create: {
+            name: 'Existing team'
+          }
+        }
+      }
+    });
+
+    const res = await graphqlRequest({
+      headers: {
+        Authorization: `Bearer ${jwt}`
+      },
+      query: UPDATE_TEAM,
+      variables: {
+        input: {
+          name: 'Updated team name'
+        }
+      }
+    });
+
+    expect(res.data).toEqual({
+      UpdateTeam: {
+        id: expect.any(String),
         name: 'Updated team name'
       }
-    }
+    });
   });
 
-  expect(prisma.user).toHaveBeenCalledWith({ id: 1 });
-  expect(prisma.updateTeam).toHaveBeenCalledWith({
-    where: { id: 1 },
-    data: {
-      name: 'Updated team name'
-    }
-  });
-  expect(res).toMatchSnapshot();
-});
-
-it('returns error if team name not provided', async () => {
-  server.context = () => ({
-    prisma,
-    user: { id: 1, email: 'test+user@email.com' }
-  });
-
-  client = createTestClient(server);
-  const res = await client.query({
-    query: UPDATE_TEAM,
-    variables: {
-      input: {
-        name: ''
+  it('returns error if team name not provided', async () => {
+    const res = await graphqlRequest({
+      headers: {
+        Authorization: `Bearer ${jwt}`
+      },
+      query: UPDATE_TEAM,
+      variables: {
+        input: {
+          name: ''
+        }
       }
-    }
-  });
+    });
 
-  expect(res.errors[0].extensions.exception.errors.name).toBe(
-    'Team name must be at least 1 character'
-  );
+    expect(res.errors[0].extensions.exception.errors.name).toBe(
+      'Team name must be at least 1 character'
+    );
+  });
 });

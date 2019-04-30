@@ -30,12 +30,5 @@ Object {
       },
     ],
   },
-  "errors": undefined,
-  "extensions": undefined,
-  "http": Object {
-    "headers": Headers {
-      Symbol(map): Object {},
-    },
-  },
 }
 `;

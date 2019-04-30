@@ -5,8 +5,7 @@ export default {
   Mutation: {
     async InviteUser(parent, { input }, { user, prisma }, info) {
       const { email, firstName, lastName } = input;
-      const team = await prisma.user({ id: user.id }).team();
-      const invite = await prisma.createInvite({
+      const params = {
         email,
         firstName,
         lastName,
@@ -14,13 +13,19 @@ export default {
           connect: {
             id: user.id
           }
-        },
-        team: {
+        }
+      };
+
+      const team = await prisma.user({ id: user.id }).team();
+      if (team) {
+        params.team = {
           connect: {
             id: team.id
           }
-        }
-      });
+        };
+      }
+
+      const invite = await prisma.createInvite(params);
 
       sendEmail({
         template_id: process.env.INVITE_USER_TEMPLATE_ID,

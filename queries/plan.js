@@ -1,6 +1,4 @@
-import { gql } from 'apollo-server-express';
-
-export const PLANS = gql`
+export const PLANS = `
   query {
     Plans {
       id
