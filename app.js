@@ -7,7 +7,7 @@ import typeDefs from './schema';
 import resolvers from './resolvers';
 import schemaDirectives from './directives';
 
-const envFile = process.env.NODE_ENV !== 'prod' ? `.env.${process.env.NODE_ENV}` : '.env';
+const envFile = process.env.NODE_ENV ? `.env.${process.env.NODE_ENV}` : '.env';
 dotenv.config({ path: envFile });
 const { prisma: prismaClient } = require('./generated/prisma-client');
 
